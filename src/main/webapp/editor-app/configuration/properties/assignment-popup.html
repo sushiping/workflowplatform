@@ -1,0 +1,65 @@
+<div class="modal" ng-controller="KisBpmAssignmentPopupCtrl">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="close()">&times;</button>
+                <h2 translate>PROPERTY.ASSIGNMENT.TITLE</h2>
+            </div>
+            <div class="modal-body">
+            
+            	<div class="row row-no-gutter">
+            		<div class="form-group">
+            			<label for="assigneeField">{{'PROPERTY.ASSIGNMENT.ASSIGNEE' | translate}}</label>
+            			<input type="text" id="assigneeField" class="form-control" ng-model="assignment.assignee" placeholder="{{'PROPERTY.ASSIGNMENT.ASSIGNEE_PLACEHOLDER' | translate}}" />
+            		</div>
+            	</div>
+                <div class="row row-no-gutter">
+                    <div class="form-group">
+                    	<label for="userField">{{'PROPERTY.ASSIGNMENT.CANDIDATE_USERS' | translate}}</label>
+                    	<i style="margin-left: 5px;" class="glyphicon glyphicon-plus clickable-property" ng-click="addCandidateUserValue($index)"></i>
+                        <div ng-repeat="candidateUser in assignment.candidateUsers">
+                        	<div class="input-group">
+								      <input id="userField{{$index}}" class="form-control" type="text" ng-model="candidateUser.value"/>
+								      <div class="input-group-addon"><span class="glyphicon glyphicon-home" ng-click="initUserTree($index,'userTreeView')"></span></div>
+				               </div>  
+            	            <i class="glyphicon glyphicon-minus clickable-property" ng-click="removeCandidateUserValue($index)"></i>
+                        </div>
+                        <input id="userHidden" type="hidden">
+                   	</div>
+                    <div class="form-group">
+                    	<label for="groupField">{{'PROPERTY.ASSIGNMENT.CANDIDATE_GROUPS' | translate}}</label>
+                    	<i style="margin-left: 5px;" class="glyphicon glyphicon-plus clickable-property" ng-click="addCandidateGroupValue($index)"></i>
+                        <div ng-repeat="candidateGroup in assignment.candidateGroups">
+		                        <div class="input-group">
+										      <input id="groupField{{$index}}" class="form-control" type="text" ng-model="candidateGroup.value" />
+										      <div class="input-group-addon"><span class="glyphicon glyphicon-home" ng-click="initGroupTree($index,'treeView')"></span></div>
+				                  </div>   
+            	          		<i class="glyphicon glyphicon-minus clickable-property" ng-click="removeCandidateGroupValue($index)"></i>
+                        </div>
+                        <input id="groupHidden" type="hidden">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button ng-click="close()" class="btn btn-primary" translate>ACTION.CANCEL</button>
+                <button ng-click="save()" class="btn btn-primary" translate>ACTION.SAVE</button>
+            </div>
+        </div>
+    </div>
+    <div id="treeView" style="display: none;background: #fff">
+	    <iframe name="ztreeFrame" id="ztreeFrame" style="border: none;overflow: auto;height: 140px;width: 100%;" src="/workflow/core/ztree.jsp"></iframe>
+	    <div style="margin-top: 0px;text-align: right;">
+	      <span style="color: green;" class="glyphicon glyphicon-ok input-lg" title="选中" ng-click="choseGroup()"></span>
+	      <span style="color: red;" class="glyphicon glyphicon-remove input-lg" title="关闭" onclick="closeTreeDiv('treeView')"></span>
+		</div>
+	</div>
+	
+	<div id="userTreeView" style="display: none;background: #fff">
+	    <iframe name="userZtreeFrame" id="userZtreeFrame" style="border: none;overflow: auto;height: 140px;width: 100%;" src="/workflow/core/userZtree.jsp"></iframe>
+	    <div style="margin-top: 0px;text-align: right;">
+	      <span style="color: green;" class="glyphicon glyphicon-ok input-lg" title="选中" ng-click="choseUser()"></span>
+	      <span style="color: red;" class="glyphicon glyphicon-remove input-lg" title="关闭" onclick="closeTreeDiv('userTreeView')"></span>
+		</div>
+	</div>
+	
+</div>

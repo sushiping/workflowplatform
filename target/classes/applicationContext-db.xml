@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- hibernate及database相关配置，包含事务相关 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd  
+
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+       default-lazy-init="false">
+
+    <context:property-placeholder location="classpath:*.properties"/>
+
+    <!-- 配置数据库相关内容，连接，驱动，用户名及密码 -->
+    <bean id="dataSource" class="com.zoomkey.core.CustomDriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="namingStrategy">
+            <bean class="com.zoomkey.core.ZoomkeyNamingStrategy"/>
+        </property>
+        <property name="dataSource">
+            <ref bean="dataSource"/>
+        </property>
+        <!-- 设置model包扫描路径 -->
+        <property name="packagesToScan">
+            <list>
+                <value>com.zoomkey</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <!-- 设置hibernate方言 -->
+                <prop key="hibernate.dialect">${hibernate.dialect}</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="javax.persistence.validation.mode">none</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- 配置事务容器 -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!-- 定义事务规则 -->
+    <bean id="transactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="add*">PROPAGATION_REQUIRED</prop>
+                <prop key="save*">PROPAGATION_REQUIRED</prop>
+                <prop key="modify*">PROPAGATION_REQUIRED</prop>
+                <prop key="update*">PROPAGATION_REQUIRED</prop>
+                <prop key="delete*">PROPAGATION_REQUIRED</prop>
+                <prop key="opt*">PROPAGATION_REQUIRED</prop>
+                <prop key="*">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+    </bean>
+    <!-- 定义事务入口  -->
+    <bean id="proxyFactory"
+          class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+        <property name="beanNames">
+            <list>
+                <value>*Bo</value>
+            </list>
+        </property>
+    </bean>
+    <!-- <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven> -->
+
+</beans>

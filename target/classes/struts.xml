@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <!-- struts2配置信息 -->
+    <!-- 禁止启用开发者模式 -->
+    <constant name="struts.devMode" value="false"/>
+    <!-- 设置默认编码UTF-8 -->
+    <constant name="struts.i18n.encoding" value="UTF-8"/>
+    <!-- 设置请求后缀，默认为.action，加入.do -->
+    <constant name="struts.action.extension" value="action,do"/>
+    <!-- 设置struts路径跳转前缀 -->
+    <constant name="struts.convention.result.path" value="/pages/"/>
+    <!-- 获取spring的对象工厂 -->
+    <constant name="struts.objectFactory" value="spring"/>
+    <!-- 设置默认拦截上传文件大小为10M -->
+    <constant name="struts.multipart.maxSize" value="10485760"/>
+    <!-- 设置struts默认主题，遵循css -->
+    <constant name="struts.ui.theme" value="css_xhtml"/>
+    <!-- 是否禁用action中通配符"/"，设置启用 -->
+    <constant name="struts.enable.SlashesInActionNames" value="true"/>
+    <!-- 命名空间是否必须精确匹配，true是精确匹配 -->
+    <constant name="struts.mapper.alwaysSelectFullNamespace" value="true"/>
+    <!-- 允许动态方法调用 -->
+    <constant name="struts.enable.DynamicMethodInvocation" value="true"/>
+    <!-- 自动扫描action配置的包 -->
+    <constant name="struts.convention.action.packages" value="com.zoomkey,com.zoomkey.workflow"/>
+    <!-- 配置URL对应根路径的包名称 -->
+    <constant name="struts.convention.package.locators" value="com.zoomkey.workflow"/>
+    <!-- 排除springmvc关联的url -->
+    <constant name="struts.action.excludePattern" value="/service/.*"/>
+   <!--  让struts2始终先考虑spring的自动装箱 -->
+    <constant name="struts.objectFactory.spring.autoWire.alwaysRespect" value="true" />
+
+    <!-- 配置默认包名字和继承关系，支持struts对json格式支持 -->
+    <package name="default" extends="json-default,struts-default">
+
+        <interceptors>
+            <!-- 配置自定义异常拦截器
+            <interceptor name="exception" class="com.zoomkey.core.BaseOptExceptionInterceptor"/>
+            -->
+            <!-- struts2默认拦截器，并设置排除拦截方法名 -->
+            <interceptor-stack name="defaultStack">
+                <interceptor-ref name="exception"/>
+                <interceptor-ref name="i18n"/>
+                <interceptor-ref name="chain"/>
+                <interceptor-ref name="fileUpload"/>
+                <interceptor-ref name="params"/>
+                <!--
+                <interceptor-ref name="logopt">
+                    <param name="excludeMethods">optException</param>
+                </interceptor-ref>
+                -->
+                <!-- 验证Action在执行过程中是否有错误，包含ActionError与FieldError两种，和validation框架配合使用 -->
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+            </interceptor-stack>
+            <!-- 配置上传文件拦截器 -->
+            <interceptor-stack name="fileUploadStack">
+                <interceptor-ref name="fileUpload"/>
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+        </interceptors>
+
+        <!-- 设置异常处理跳转对应的action，全局生效
+        <global-results>
+            <result type="chain" name="optException">optException</result>
+        </global-results>
+        -->
+
+        <!-- 全局异常配置，包含设置异常mapping
+        <global-exception-mappings>
+            <exception-mapping result="optException" exception="java.lang.Exception">
+                <param name="emsg">error</param>
+            </exception-mapping>
+        </global-exception-mappings>
+        -->
+    </package>
+
+</struts>
